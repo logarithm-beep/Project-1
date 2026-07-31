@@ -2,7 +2,6 @@ import yfinance as yf
 
 def fetch_stock_data(ticker, period = '1y'):
     
-
     possible_tickers = [
         ticker,
         ticker + ".NS",
