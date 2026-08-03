@@ -9,7 +9,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           cols = 1,
           shared_xaxes= True,
           vertical_spacing= 0.05,
-          row_heights=[0.65,0.35]
+          row_heights=[0.7,0.3]
     )
 
     fig.add_trace(
@@ -76,20 +76,22 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
     )
 
     fig.update_layout(
-        height = 600,
+        height = 650,
         xaxis_rangeslider_visible = False,
-        title = f"{ticker} Stock Price",
-        template="plotly_white"
+        title = f"{ticker} Stock Analysis",
+        template="plotly_dark"
     )
     fig.update_yaxes(
+          showgrid=False,
           title_text="Price",
           row=1,
           col=1
     )
     fig.update_yaxes(
-              title_text="Volume",
-              row=2,
-              col=1
+            showgrid=False,
+            title_text="Volume",
+            row=2,
+            col=1
         )
     fig.update_xaxes(
           title_text = "Date",
