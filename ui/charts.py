@@ -5,11 +5,11 @@ import numpy as np
 
 def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
     fig = make_subplots(
-          rows = 3,
+          rows = 4,
           cols = 1,
           shared_xaxes= True,
           vertical_spacing= 0.05,
-          row_heights=[0.6,0.2,0.2]
+          row_heights=[0.55,0.15,0.15,0.15]
     )
 
     fig.add_trace(
@@ -59,17 +59,22 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
                     row = 1,
                     col = 1
             )
-    colors = np.where(
+    colors_vol = np.where(
       df["Close"] >= df["Open"],
       "green",
       "red"
     )
+    colors_macd = np.where(
+          df["Histogram"]>=0,
+          "green",
+          "red"
+        )
     fig.add_trace(
           go.Bar(
                 x = df.index,
                 y = df["Volume"],
                 name = "Volume",
-                marker_color = colors
+                marker_color = colors_vol
           ),
           row = 2,
           col = 1
@@ -83,6 +88,36 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
                 name = "RSI"
           ),
           row = 3,
+          col = 1
+    )
+    fig.add_trace(
+          go.scatter(
+                x = df.index,
+                y = df['MACD'],
+                mode='lines',
+                name = 'MACD'
+          ),
+          row = 4,
+          col = 1,                
+    )
+    fig.add_trace(
+          go.scatter(
+                x = df.index,
+                y = df['Signal'],
+                mode = 'lines',
+                name = 'Signal'
+          ),
+          row = 4,
+          col = 1
+    )
+    fig.add_trace(
+          go.bar(
+                x = df.index,
+                y = df["MACD"]-df["Signal"],
+                name = "Histogram",
+                marker_color = colors_macd
+          ),
+          row = 4,
           col = 1
     )
     fig.add_hline(
@@ -108,6 +143,13 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
         line_width = 2,
         row = 3,
         col = 1  
+    )
+    fig.add_hline(
+          y = 0,
+        line_dash = "dash",
+        line_color = "gray",
+        row = 4,
+        col = 1
     )
 
     fig.update_layout(
@@ -135,9 +177,14 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           row = 3,
           col = 1
     )
+    fig.update_yaxes(
+          title_text = "MACD",
+          row = 4,
+          col = 1
+    )
     fig.update_xaxes(
           title_text = "Date",
-          row=3,
+          row=4,
           col=1
     )
 
