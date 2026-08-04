@@ -4,6 +4,7 @@ from ui.charts import plot_price_chart
 from indicators.moving_average import calculate_ma
 from data.company_info import fetch_company_info
 from utils.formatters import format_large_number
+from indicators.rsi import calculate_rsi
 
 st.title("SmartStocks AI")
 st.write("Welcome to SmartStocks AI")
@@ -29,7 +30,8 @@ if st.button("Fetch Data"):
         Previous_price =df["Close"].iloc[-2]
         price_change = current_price-Previous_price
         percentage_change = (price_change/Previous_price)*100
-            
+        df = calculate_rsi(df,14)
+                
         if show_ma20:
             df = calculate_ma(df, 20)
 

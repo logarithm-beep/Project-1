@@ -5,11 +5,11 @@ import numpy as np
 
 def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
     fig = make_subplots(
-          rows = 2,
+          rows = 3,
           cols = 1,
           shared_xaxes= True,
           vertical_spacing= 0.05,
-          row_heights=[0.7,0.3]
+          row_heights=[0.6,0.2,0.2]
     )
 
     fig.add_trace(
@@ -74,6 +74,41 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           row = 2,
           col = 1
     )
+    
+    fig.add_trace(
+          go.Scatter(
+                x = df.index,
+                y = df["RSI"],
+                mode = "lines",
+                name = "RSI"
+          ),
+          row = 3,
+          col = 1
+    )
+    fig.add_hline(
+            y = 50,
+            line_dash = 'dash',
+            line_color = 'gray',
+            line_width = 1,
+            row = 3,
+            col = 1  
+        )
+    fig.add_hline(
+            y = 70,
+            line_dash = 'dash',
+            line_color = 'red',
+            line_width = 2,
+            row = 3,
+            col = 1  
+        )
+    fig.add_hline(
+        y = 30,
+        line_dash = 'dash',
+        line_color = 'lime',
+        line_width = 2,
+        row = 3,
+        col = 1  
+    )
 
     fig.update_layout(
         height = 650,
@@ -93,9 +128,16 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
             row=2,
             col=1
         )
+    fig.update_yaxes(
+          title_text = "RSI",
+          range = [0,100],
+          tickvals = [0,30,50,70,100],
+          row = 3,
+          col = 1
+    )
     fig.update_xaxes(
           title_text = "Date",
-          row=2,
+          row=3,
           col=1
     )
 

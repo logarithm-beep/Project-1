@@ -1,6 +1,6 @@
 import yfinance as yf
 
-def fetch_stock_data(ticker, period='1y'):
+def fetch_stock_data(ticker, period):
     
     possible_tickers = [
         ticker,
