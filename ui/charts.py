@@ -68,7 +68,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           df["Histogram"]>=0,
           "green",
           "red"
-        )
+      )
     fig.add_trace(
           go.Bar(
                 x = df.index,
@@ -91,7 +91,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           col = 1
     )
     fig.add_trace(
-          go.scatter(
+          go.Scatter(
                 x = df.index,
                 y = df['MACD'],
                 mode='lines',
@@ -101,7 +101,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           col = 1,                
     )
     fig.add_trace(
-          go.scatter(
+          go.Scatter(
                 x = df.index,
                 y = df['Signal'],
                 mode = 'lines',
@@ -111,9 +111,9 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
           col = 1
     )
     fig.add_trace(
-          go.bar(
+          go.Bar(
                 x = df.index,
-                y = df["MACD"]-df["Signal"],
+                y = df["Histogram"],
                 name = "Histogram",
                 marker_color = colors_macd
           ),
@@ -145,7 +145,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
         col = 1  
     )
     fig.add_hline(
-          y = 0,
+        y = 0,
         line_dash = "dash",
         line_color = "gray",
         row = 4,
