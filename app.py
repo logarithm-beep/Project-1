@@ -6,6 +6,7 @@ from data.company_info import fetch_company_info
 from utils.formatters import format_large_number
 from indicators.rsi import calculate_rsi
 from indicators.macd import calculate_macd
+from analysis.recommendation import generate_recommendation
 
 st.title("SmartStocks AI")
 st.write("Welcome to SmartStocks AI")
@@ -41,9 +42,16 @@ if st.button("Fetch Data"):
 
         if show_ma100:
             df = calculate_ma(df, 100)
+        if "MA50" not in df.columns:
+            df = calculate_ma(df, 50)
+
+        
 
         df = calculate_rsi(df,14)
         df = calculate_macd(df)
+
+        result = generate_recommendation(df)
+       
 
         fig = plot_price_chart(df,actual_ticker,show_ma20,show_ma50,show_ma100)
 
@@ -58,6 +66,26 @@ if st.button("Fetch Data"):
 
         with col3:
             st.write(f"**Market Cap:** {format_large_number(company_info['market_cap'])}")
+
+        st.subheader("AI Recommendation")
+        signal = result["Signal"]
+        score = result["Score"]
+        reasons = result["Reasons"]
+
+        if signal == "BUY":
+            st.success(f"🟢 BUY — Score: {score}")
+
+        elif signal == "SELL":
+            st.error(f"🔴 SELL — Score: {score}")
+
+        else:
+            st.warning(f"🟡 HOLD — Score: {score}")
+
+        st.write("### Why?")
+
+        for reason in reasons:
+            st.write(f"• {reason}")
+
 
         col1,col2,col3,col4 = st.columns(4)
         st.success(f"Using ticker: {actual_ticker}")

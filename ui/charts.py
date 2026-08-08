@@ -95,7 +95,8 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
                 x = df.index,
                 y = df['MACD'],
                 mode='lines',
-                name = 'MACD'
+                name = 'MACD',
+                line=dict(color='cyan')
           ),
           row = 4,
           col = 1,                
@@ -105,7 +106,8 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
                 x = df.index,
                 y = df['Signal'],
                 mode = 'lines',
-                name = 'Signal'
+                name = 'Signal',
+                line=dict(color='orange')
           ),
           row = 4,
           col = 1
