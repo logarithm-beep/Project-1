@@ -3,7 +3,7 @@ from plotly.subplots import make_subplots
 import numpy as np
 
 
-def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
+def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
     fig = make_subplots(
           rows = 4,
           cols = 1,
@@ -28,9 +28,9 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
         fig.add_trace(
             go.Scatter(
                     x = df.index,
-                    y = df[f"MA20"],
+                    y = df["MA20"],
                     mode = "lines",
-                    name = f"Moving average 20"
+                    name = "Moving average 20"
                 ),
                 row = 1,
                 col = 1
@@ -40,9 +40,9 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
             fig.add_trace(
                 go.Scatter(
                         x = df.index,
-                        y = df[f"MA50"],
+                        y = df["MA50"],
                         mode = "lines",
-                        name = f"Moving average 50"
+                        name = "Moving average 50"
                     ),
                     row = 1,
                     col = 1
@@ -52,12 +52,34 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100):
             fig.add_trace(
                 go.Scatter(
                         x = df.index,
-                        y = df[f"MA100"],
+                        y = df["MA100"],
                         mode = "lines",
-                        name = f"Moving average 100"
+                        name = "Moving average 100"
                     ),
                     row = 1,
                     col = 1
+            )
+
+    if show_bollinger:
+            fig.add_trace(
+                go.Scatter(
+                      x = df.index,
+                      y = df["Upper"],
+                      mode = "lines",
+                      name = "Upper Bollinger Band"
+                ),
+                row = 1,
+                col = 1
+            )
+            fig.add_trace(
+                  go.Scatter(
+                        x = df.index,
+                        y = df["Lower"],
+                        mode = "lines",
+                        name = "Lower Bollinger Band"
+                  ),
+                  row = 1,
+                  col = 1
             )
     colors_vol = np.where(
       df["Close"] >= df["Open"],
