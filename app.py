@@ -7,7 +7,7 @@ from utils.formatters import format_large_number
 from indicators.rsi import calculate_rsi
 from indicators.macd import calculate_macd
 from indicators.bollinger_band import bollinger_band
-from analysis.recommendation import generate_recommendation
+from analysis.recommendation import generate_recommendation, calculate_volume
 
 st.title("SmartStocks AI")
 st.write("Welcome to SmartStocks AI")
@@ -52,6 +52,7 @@ if st.button("Fetch Data"):
         df = calculate_rsi(df,14)
         df = calculate_macd(df)
         df = bollinger_band(df)
+        df = calculate_volume(df)
 
         result = generate_recommendation(df)
        
