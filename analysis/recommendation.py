@@ -71,19 +71,28 @@ def generate_recommendation(df):
         elif latest["Close"] < latest["Open"]:
             score -= 1
             reasons.append("High volume confirms bearish price movement")
+
+        if latest["ADX"] > 25:
+            if latest["+DI"] > latest["-DI"]:
+                score += 1
+                reasons.append("ADX confirms a strong bullish trend")
+
+            elif latest["-DI"] > latest["+DI"]:
+                score -= 1
+                reasons.append("ADX confirms a strong bearish trend")
         
     
     # Final recommendation
-    if score >= 6:
+    if score > 6:
         signal = "STRONG BUY"
 
-    elif score >= 3:
+    elif score > 3:
         signal = "BUY"
 
-    elif score <= -6:
+    elif score < -6:
         signal = "STRONG SELL"
 
-    elif score <= -3:
+    elif score < -3:
         signal = "SELL"
 
     else:

@@ -3,16 +3,16 @@ from plotly.subplots import make_subplots
 import numpy as np
 
 
-def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
-    fig = make_subplots(
-          rows = 4,
+def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger,show_adx):
+      fig = make_subplots(
+          rows = 5,
           cols = 1,
           shared_xaxes= True,
           vertical_spacing= 0.05,
-          row_heights=[0.55,0.15,0.15,0.15]
+          row_heights=[0.55,0.15,0.15,0.12,0.08]
     )
 
-    fig.add_trace(
+      fig.add_trace(
         go.Candlestick(
             x = df.index,
             open = df["Open"],
@@ -24,8 +24,8 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
         row = 1,
         col = 1
     )
-    if show_ma20:
-        fig.add_trace(
+      if show_ma20:
+         fig.add_trace(
             go.Scatter(
                     x = df.index,
                     y = df["MA20"],
@@ -36,7 +36,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
                 col = 1
         )
 
-    if show_ma50:
+      if show_ma50:
             fig.add_trace(
                 go.Scatter(
                         x = df.index,
@@ -48,7 +48,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
                     col = 1
             )
 
-    if show_ma100:
+      if show_ma100:
             fig.add_trace(
                 go.Scatter(
                         x = df.index,
@@ -60,7 +60,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
                     col = 1
             )
 
-    if show_bollinger:
+      if show_bollinger:
             fig.add_trace(
                 go.Scatter(
                       x = df.index,
@@ -81,17 +81,38 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
                   row = 1,
                   col = 1
             )
-    colors_vol = np.where(
+      if show_adx:
+            fig.add_trace(
+                  go.Scatter(
+                        x = df.index,
+                        y = df["+DI"],
+                        mode = "lines",
+                        name = "+DI"
+                  ),
+                  row = 5,
+                  col = 1
+            )
+            fig.add_trace(
+                  go.Scatter(
+                        x = df.index,
+                        y = df["-DI"],
+                        mode = "lines",
+                        name = "-DI"
+                  ),
+                  row = 5,
+                  col = 1
+            )
+      colors_vol = np.where(
       df["Close"] >= df["Open"],
       "green",
       "red"
     )
-    colors_macd = np.where(
+      colors_macd = np.where(
           df["Histogram"]>=0,
           "green",
           "red"
       )
-    fig.add_trace(
+      fig.add_trace(
           go.Bar(
                 x = df.index,
                 y = df["Volume"],
@@ -102,7 +123,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
           col = 1
     )
     
-    fig.add_trace(
+      fig.add_trace(
           go.Scatter(
                 x = df.index,
                 y = df["RSI"],
@@ -112,7 +133,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
           row = 3,
           col = 1
     )
-    fig.add_trace(
+      fig.add_trace(
           go.Scatter(
                 x = df.index,
                 y = df['MACD'],
@@ -123,7 +144,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
           row = 4,
           col = 1,                
     )
-    fig.add_trace(
+      fig.add_trace(
           go.Scatter(
                 x = df.index,
                 y = df['Signal'],
@@ -134,7 +155,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
           row = 4,
           col = 1
     )
-    fig.add_trace(
+      fig.add_trace(
           go.Bar(
                 x = df.index,
                 y = df["Histogram"],
@@ -144,7 +165,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
           row = 4,
           col = 1
     )
-    fig.add_hline(
+      fig.add_hline(
             y = 50,
             line_dash = 'dash',
             line_color = 'gray',
@@ -152,7 +173,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
             row = 3,
             col = 1  
         )
-    fig.add_hline(
+      fig.add_hline(
             y = 70,
             line_dash = 'dash',
             line_color = 'red',
@@ -160,7 +181,7 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
             row = 3,
             col = 1  
         )
-    fig.add_hline(
+      fig.add_hline(
         y = 30,
         line_dash = 'dash',
         line_color = 'lime',
@@ -168,48 +189,60 @@ def plot_price_chart(df,ticker,show_ma20,show_ma50,show_ma100,show_bollinger):
         row = 3,
         col = 1  
     )
-    fig.add_hline(
+      fig.add_hline(
         y = 0,
         line_dash = "dash",
         line_color = "gray",
         row = 4,
         col = 1
     )
+      fig.add_hline(
+            y = 25,
+            line_dash = "dash",
+            row = 5,
+            col = 1
+      )
 
-    fig.update_layout(
-        height = 650,
+      fig.update_layout(
+        height = 900,
         xaxis_rangeslider_visible = False,
         title = f"{ticker} Stock Analysis",
         template="plotly_dark"
     )
-    fig.update_yaxes(
+      fig.update_yaxes(
           showgrid=False,
           title_text="Price",
           row=1,
           col=1
     )
-    fig.update_yaxes(
+      fig.update_yaxes(
             showgrid=False,
             title_text="Volume",
             row=2,
             col=1
         )
-    fig.update_yaxes(
+      fig.update_yaxes(
           title_text = "RSI",
           range = [0,100],
           tickvals = [0,30,50,70,100],
           row = 3,
           col = 1
     )
-    fig.update_yaxes(
+      fig.update_yaxes(
           title_text = "MACD",
           row = 4,
           col = 1
     )
-    fig.update_xaxes(
+      fig.update_yaxes(
+            title_text = "ADX",
+            row = 5,
+            col = 1
+    )
+      fig.update_xaxes(
           title_text = "Date",
           row=4,
           col=1
     )
+      
 
-    return fig
+      return fig

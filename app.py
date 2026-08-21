@@ -7,6 +7,7 @@ from utils.formatters import format_large_number
 from indicators.rsi import calculate_rsi
 from indicators.macd import calculate_macd
 from indicators.bollinger_band import bollinger_band
+from indicators.adx import calculate_adx
 from analysis.recommendation import generate_recommendation, calculate_volume
 
 st.title("SmartStocks AI")
@@ -18,6 +19,7 @@ show_ma20 = st.sidebar.checkbox("MA20")
 show_ma50 = st.sidebar.checkbox("MA50")
 show_ma100 = st.sidebar.checkbox("MA100")
 show_bollinger = st.sidebar.checkbox("Bollinger Bands")
+show_adx = st.sidebar.checkbox("ADX")
 
 st.sidebar.divider()
 
@@ -53,11 +55,12 @@ if st.button("Fetch Data"):
         df = calculate_macd(df)
         df = bollinger_band(df)
         df = calculate_volume(df)
+        df = calculate_adx(df)
 
         result = generate_recommendation(df)
        
 
-        fig = plot_price_chart(df,actual_ticker,show_ma20,show_ma50,show_ma100,show_bollinger)
+        fig = plot_price_chart(df,actual_ticker,show_ma20,show_ma50,show_ma100,show_bollinger,show_adx)
 
         st.subheader(company_info["name"])
         col1, col2,col3 = st.columns(3)
