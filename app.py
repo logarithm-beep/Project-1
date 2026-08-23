@@ -62,37 +62,23 @@ if st.button("Fetch Data"):
 
         fig = plot_price_chart(df,actual_ticker,show_ma20,show_ma50,show_ma100,show_bollinger,show_adx)
 
-        st.subheader(company_info["name"])
-        col1, col2,col3 = st.columns(3)
+        st.title(company_info["name"])
 
-        with col1:
-            st.write(f"**Sector:** {company_info['sector']}")
+        with st.expander("ℹ️ Company Information"):
 
-        with col2:
-            st.write(f"**Industry:** {company_info['industry']}")
+            col1, col2, col3 = st.columns(3)
 
-        with col3:
-            st.write(f"**Market Cap:** {format_large_number(company_info['market_cap'])}")
+            with col1:
+                st.write(f"**Sector:** {company_info['sector']}")
 
-        st.subheader("AI Recommendation")
-        signal = result["Signal"]
-        score = result["Score"]
-        reasons = result["Reasons"]
+            with col2:
+                st.write(f"**Industry:** {company_info['industry']}")
 
-        if signal == "BUY":
-            st.success(f"🟢 BUY — Score: {score}")
-
-        elif signal == "SELL":
-            st.error(f"🔴 SELL — Score: {score}")
-
-        else:
-            st.warning(f"🟡 HOLD — Score: {score}")
-
-        st.write("### Why?")
-
-        for reason in reasons:
-            st.write(f"• {reason}")
-
+            with col3:
+                st.write(
+                    f"**Market Cap:** "
+                    f"{format_large_number(company_info['market_cap'])}"
+                )
 
         col1,col2,col3,col4 = st.columns(4)
         st.success(f"Using ticker: {actual_ticker}")
@@ -101,12 +87,12 @@ if st.button("Fetch Data"):
                 label="📈 Current Price",
                 value = f"₹{current_price:.2f}",
                 delta= f"{price_change:+.2f} ({percentage_change:+.2f})%"
-            )
+                )
         with col2:
             st.metric(
-                label="📊 Today's Volume",
-                value=f"{format_large_number(df['Volume'].iloc[-1])}"
-            )
+            label="📊 Today's Volume",
+            value=f"{format_large_number(df['Volume'].iloc[-1])}"
+            )   
         with col3:
             st.metric(
                 label="⬆️ 52 Week High",
@@ -117,8 +103,112 @@ if st.button("Fetch Data"):
                 label="⬇️52 Week Low",
                 value=f"₹{df['Low'].min():.2f}"
             )
+        tab1, tab2, tab3, tab4 = st.tabs([
+            "📊 Overview",
+            "📈 Technical",
+            "💰 Performance",
+            "⚠️ Risk"
+        ])
+
+        with tab1:
+            st.subheader("🤖 AI Recommendation")
+            with st.container(border=True):
+                signal = result["Signal"]
+                score = result["Score"]
+                reasons = result["Reasons"]
+                Indicatorscores = result["Indicatorscores"]
+
+                if signal == "BUY":
+                    st.success(f"🟢 BUY — Score: {score}")
+
+                elif signal == "SELL":
+                    st.error(f"🔴 SELL — Score: {score}")
+
+                else:
+                    st.warning(f"🟡 HOLD — Score: {score}")
+
+                st.write("### Why?")
+
+                for reason in reasons:
+                    st.write(f"✓ {reason}")
+
+                st.write("#### 📊 Score Breakdown")
+
+                cols = st.columns(3)
+
+                for i, (indicator, points) in enumerate(Indicatorscores.items()):
+
+                    with cols[i % 3]:
+
+                        if points > 0:
+                            st.success(f"🟢 {indicator}\n+{points}")
+
+                        elif points < 0:
+                            st.error(f"🔴 {indicator}\n{points}")
+
+                        else:
+                            st.info(f"⚪ {indicator}\n0")
+
+        with tab2:
+            st.subheader("📈 Technical Analysis")
+            st.plotly_chart(fig, use_container_width=True)
         st.write(df.tail())
-        st.plotly_chart(fig)
+        def calculate_return(df, days):
+            if len(df) <= days:
+                return None
+
+            current = df["Close"].iloc[-1]
+            previous = df["Close"].iloc[-days - 1]
+
+            return ((current / previous) - 1) * 100
+        return_1d = calculate_return(df,1)
+        return_1w = calculate_return(df,6)
+        return_1m = calculate_return(df,21)
+        return_6m = calculate_return(df,126)
+
+        return_1y = calculate_return(df,250)
+        with tab3:
+            st.subheader("💰 Performance")
+            col1, col2, col3, col4, col5 = st.columns(5)
+
+            with col1:
+                if return_1d is not None:
+                    st.metric("1D", f"{return_1d:+.2f}%")
+                else:
+                    st.metric("1D", "N/A")
+
+            with col2:
+                if return_1w is not None:
+                    st.metric("1W", f"{return_1w:+.2f}%")
+                else:
+                    st.metric("1W", "N/A")
+
+            with col3:
+                if return_1m is not None:
+                    st.metric("1M", f"{return_1m:+.2f}%")
+                else:
+                    st.metric("1M", "N/A")
+            with col4:
+                if return_6m is not None:
+                    st.metric("6M", f"{return_6m:+.2f}%")
+                else:
+                    st.metric("6M", "N/A")
+
+            with col5:
+                if return_1y is not None:
+                    st.metric("1Y", f"{return_1y:+.2f}%")
+                else:
+                    st.metric("1Y", "N/A")
+
+        daily_returns = df["Close"].pct_change()
+        annual_volatility = (daily_returns.std() * (252 ** 0.5) * 100)        
+
+        with tab4:
+            st.subheader("⚠️ Risk")
+        
+            st.metric(
+                "Annualized Volatility",
+                f"{annual_volatility:.2f}%")
+            st.info("Risk analysis coming next.")
     except ValueError as e:
         st.error(str(e))
-
