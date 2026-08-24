@@ -1,4 +1,5 @@
 import streamlit as st
+import pandas as pd  
 from data.fetch_data import fetch_stock_data 
 from ui.charts import plot_price_chart
 from indicators.moving_average import calculate_ma
@@ -20,10 +21,41 @@ show_ma50 = st.sidebar.checkbox("MA50")
 show_ma100 = st.sidebar.checkbox("MA100")
 show_bollinger = st.sidebar.checkbox("Bollinger Bands")
 show_adx = st.sidebar.checkbox("ADX")
+stocks = pd.read_csv("stocks.csv")
+
+stocks['Display'] = (stocks["SYMBOL"] + ' - ' + stocks["NAME OF COMPANY"] )
 
 st.sidebar.divider()
 
-ticker = st.text_input("Enter Stock Ticker: ")
+search = st.text_input(
+    "🔎 Search Stock",
+    placeholder="Enter ticker or company name...")
+if search:
+
+    search_lower = search.lower()
+
+    matches = stocks[
+        stocks["SYMBOL"].str.lower().str.contains(search_lower, na=False)
+        |
+        stocks["NAME OF COMPANY"].str.lower().str.contains(search_lower, na=False)
+    ]
+
+    matches = matches.head(10)
+
+if search and not matches.empty:
+
+    selected_stock = st.selectbox(
+        "Select a stock",
+        matches["Display"].tolist()
+    )
+
+else:
+    selected_stock = search.upper()
+
+if " — " in selected_stock:
+    ticker = selected_stock.split(" — ")[0]
+else:
+    ticker = selected_stock
 time_period = st.selectbox("Select time period",
                            options=["1d", "5d", "1mo", "6mo", "1y", "5y", "max"],
                            index = 4)
