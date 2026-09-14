@@ -127,5 +127,5 @@ def generate_recommendation(df):
         "Signal": signal,
         "Score": score,
         "Reasons": reasons,
-        "Indicatorscores":scores
+        "IndicatorScores":scores
     }

@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd  
+import yfinance as yf
 from data.fetch_data import fetch_stock_data 
 from ui.charts import plot_price_chart
 from indicators.moving_average import calculate_ma
@@ -52,22 +53,24 @@ if search and not matches.empty:
 else:
     selected_stock = search.upper()
 
-if " — " in selected_stock:
-    ticker = selected_stock.split(" — ")[0]
+if " - " in selected_stock:
+    ticker = selected_stock.split(" - ")[0]
 else:
     ticker = selected_stock
 time_period = st.selectbox("Select time period",
-                           options=["1d", "5d", "1mo", "6mo", "1y", "5y", "max"],
-                           index = 4)
+                           options=["6mo", "1y", "5y", "max"],
+                           index = 1)
 
 if st.button("Fetch Data"):
     try:
         df,actual_ticker = fetch_stock_data(ticker.upper(),period=time_period)
         company_info = fetch_company_info(actual_ticker)
+        one_year_data = yf.Ticker(actual_ticker).history(period="1y")
         current_price = df["Close"].iloc[-1]
         Previous_price =df["Close"].iloc[-2]
         price_change = current_price-Previous_price
         percentage_change = (price_change/Previous_price)*100
+        stock = yf.Ticker(actual_ticker)
        
                 
         if show_ma20:
@@ -128,12 +131,12 @@ if st.button("Fetch Data"):
         with col3:
             st.metric(
                 label="⬆️ 52 Week High",
-                value=f"₹{df['High'].max():.2f}"
+                value=f"₹{one_year_data['High'].max():.2f}"
                 )
         with col4:
             st.metric(
                 label="⬇️52 Week Low",
-                value=f"₹{df['Low'].min():.2f}"
+                value=f"₹{one_year_data['Low'].min():.2f}"
             )
         tab1, tab2, tab3, tab4 = st.tabs([
             "📊 Overview",
@@ -148,7 +151,7 @@ if st.button("Fetch Data"):
                 signal = result["Signal"]
                 score = result["Score"]
                 reasons = result["Reasons"]
-                Indicatorscores = result["Indicatorscores"]
+                Indicator_scores = result["IndicatorScores"]
 
                 if signal == "BUY":
                     st.success(f"🟢 BUY — Score: {score}")
@@ -168,7 +171,7 @@ if st.button("Fetch Data"):
 
                 cols = st.columns(3)
 
-                for i, (indicator, points) in enumerate(Indicatorscores.items()):
+                for i, (indicator, points) in enumerate(Indicator_scores.items()):
 
                     with cols[i % 3]:
 
@@ -184,21 +187,29 @@ if st.button("Fetch Data"):
         with tab2:
             st.subheader("📈 Technical Analysis")
             st.plotly_chart(fig, use_container_width=True)
-        st.write(df.tail())
         def calculate_return(df, days):
-            if len(df) <= days:
+            if df.empty:
                 return None
 
-            current = df["Close"].iloc[-1]
-            previous = df["Close"].iloc[-days - 1]
+            current_price = df["Close"].iloc[-1]
+            current_date = df["Close"].index[-1]
+            
+            target_date = current_date - pd.Timedelta(days=days)
 
-            return ((current / previous) - 1) * 100
-        return_1d = calculate_return(df,1)
-        return_1w = calculate_return(df,6)
-        return_1m = calculate_return(df,21)
-        return_6m = calculate_return(df,126)
+            previous_data = df[df.index <= target_date] 
+            if previous_data.empty:
+                return None
 
-        return_1y = calculate_return(df,250)
+            Previous_price = previous_data["Close"].iloc[-1]
+
+            return ((current_price / Previous_price) - 1) * 100
+
+
+        return_1d = calculate_return(df, 1)
+        return_1w = calculate_return(df, 7)
+        return_1m = calculate_return(df, 30)
+        return_6m = calculate_return(df, 180)
+        return_1y = calculate_return(df, 365)
         with tab3:
             st.subheader("💰 Performance")
             col1, col2, col3, col4, col5 = st.columns(5)
@@ -235,12 +246,21 @@ if st.button("Fetch Data"):
         daily_returns = df["Close"].pct_change()
         annual_volatility = (daily_returns.std() * (252 ** 0.5) * 100)        
 
+        rolling_peak = df["Close"].cummax()
+
+        drawdown = ((df["Close"] - rolling_peak)/rolling_peak)
+        max_drawdown = drawdown.min() * 100
+
         with tab4:
             st.subheader("⚠️ Risk")
         
             st.metric(
                 "Annualized Volatility",
                 f"{annual_volatility:.2f}%")
-            st.info("Risk analysis coming next.")
+            st.caption(f"Calculated using {time_period} of historical data.")
+            st.metric(
+                "Maximum Drawdown",
+                f"{max_drawdown:.2f}%")
+            st.caption("Maximum drawdown is the largest peak-to-trough decline during the selected period.")
     except ValueError as e:
         st.error(str(e))
