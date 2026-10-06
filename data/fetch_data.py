@@ -20,6 +20,11 @@ def fetch_stock_data(ticker, period ):
             if not data.empty:
                 return data,symbol
         except Exception:
+            if "Too Many Requests" in str(e):
+                raise ValueError(
+                    "Yahoo Finance is temporarily rate-limiting requests. "
+                    "Please try again later."
+                )
             continue
 
     raise ValueError(f"No data found for ticker {ticker}.")
