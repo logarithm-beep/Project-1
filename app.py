@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd  
 import yfinance as yf
+from yfinance.exceptions import YFRateLimitError
 from data.fetch_data import fetch_stock_data 
 from ui.charts import plot_price_chart
 from indicators.moving_average import calculate_ma
@@ -263,6 +264,9 @@ if st.button("Fetch Data"):
                     "Maximum Drawdown",
                     f"{max_drawdown:.2f}%")
                 st.caption("Maximum drawdown is the largest peak-to-trough decline during the selected period.")
+
+        except YFRateLimitError:
+            st.error("🚦 Yahoo Finance is temporarily rate-limiting requests. Please try again later.")
         except ValueError:
             st.error("❌ Stock not found. Please check the ticker or company name.")
 
