@@ -65,7 +65,7 @@ if st.button("Fetch Data"):
     with st.spinner("Fetching market data..."):
         try:
             df,actual_ticker = fetch_stock_data(ticker.upper(),period=time_period)
-            company_info = fetch_company_info(actual_ticker)
+            # company_info = fetch_company_info(actual_ticker)
             one_year_data = df
             current_price = df["Close"].iloc[-1]
             Previous_price =df["Close"].iloc[-2]
