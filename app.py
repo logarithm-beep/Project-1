@@ -66,7 +66,7 @@ if st.button("Fetch Data"):
         try:
             df,actual_ticker = fetch_stock_data(ticker.upper(),period=time_period)
             company_info = fetch_company_info(actual_ticker)
-            one_year_data = yf.Ticker(actual_ticker).history(period="1y")
+            one_year_data = df
             current_price = df["Close"].iloc[-1]
             Previous_price =df["Close"].iloc[-2]
             price_change = current_price-Previous_price
