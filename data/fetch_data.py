@@ -1,6 +1,6 @@
 import yfinance as yf
 import streamlit as st
-
+from curl_cffi import requests
 
 @st.cache_data(ttl=3600)
 
@@ -13,7 +13,8 @@ def fetch_stock_data(ticker, period ):
         ticker + ".BO"
     ]
     for symbol in possible_tickers:
-        try:  
+        try:
+            session = requests.Session(impersonate="chrome")
             stock = yf.Ticker(symbol)
             data = stock.history(period = period)
 
