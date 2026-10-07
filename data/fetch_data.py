@@ -8,9 +8,7 @@ def fetch_stock_data(ticker, period ):
 
     
     possible_tickers = [
-        ticker,
-        ticker + ".NS",
-        ticker + ".BO"
+        ticker + ".NS"
     ]
     for symbol in possible_tickers:
         try:  
