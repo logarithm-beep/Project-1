@@ -71,7 +71,7 @@ if st.button("Fetch Data"):
             Previous_price =df["Close"].iloc[-2]
             price_change = current_price-Previous_price
             percentage_change = (price_change/Previous_price)*100
-            stock = yf.Ticker(actual_ticker)
+            # stock = yf.Ticker(actual_ticker)
         
                     
             if show_ma20:
