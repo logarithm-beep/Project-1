@@ -4,3 +4,4 @@ yfinance==1.5.2
 plotly==6.9.0
 numpy==2.5.1
 curl_cffi>=0.16
+requests
