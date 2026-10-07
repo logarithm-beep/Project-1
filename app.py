@@ -98,23 +98,23 @@ if st.button("Fetch Data"):
 
             fig = plot_price_chart(df,actual_ticker,show_ma20,show_ma50,show_ma100,show_bollinger,show_adx)
 
-            st.title(company_info["name"])
+            # st.title(company_info["name"])
 
-            with st.expander("ℹ️ Company Information"):
+            # with st.expander("ℹ️ Company Information"):
 
-                col1, col2, col3 = st.columns(3)
+            #     col1, col2, col3 = st.columns(3)
 
-                with col1:
-                    st.write(f"**Sector:** {company_info['sector']}")
+            #     with col1:
+            #         st.write(f"**Sector:** {company_info['sector']}")
 
-                with col2:
-                    st.write(f"**Industry:** {company_info['industry']}")
+            #     with col2:
+            #         st.write(f"**Industry:** {company_info['industry']}")
 
-                with col3:
-                    st.write(
-                        f"**Market Cap:** "
-                        f"{format_large_number(company_info['market_cap'])}"
-                    )
+            #     with col3:
+            #         st.write(
+            #             f"**Market Cap:** "
+            #             f"{format_large_number(company_info['market_cap'])}"
+            #         )
 
             col1,col2,col3,col4 = st.columns(4)
             st.success(f"Using ticker: {actual_ticker}")
